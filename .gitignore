@@ -5,4 +5,5 @@
 .settings
 .svn
 
-data/*
+data/mysql/*
+data/redis/*
