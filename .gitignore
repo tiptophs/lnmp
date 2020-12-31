@@ -7,3 +7,5 @@
 
 data/mysql/*
 data/redis/*
+docker-compose.yml
+.env
