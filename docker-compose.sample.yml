@@ -6,26 +6,26 @@ services:
   nginx:
     build:
       context: ./services/nginx
-      args: 
+      args:
         NGINX_VERSION: nginx:${NGINX_VERSION}
         CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
         NGINX_INSTALL_APPS: ${NGINX_INSTALL_APPS}
     container_name: nginx
-    ports: 
+    ports:
       - "${NGINX_HTTP_HOST_PORT}:80"
       - "${NGINX_HTTPS_HOST_PORT}:443"
-    volumes:  
+    volumes:
       - ${SOURCE_DIR}:/www
       - ${NGINX_SSL_CERTIFICATE_DIR}:/ssl:rw
       - ${NGINX_CONFD_DIR}:/etc/nginx/conf.d/:rw
       - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
       - ${NGINX_FASTCGI_PHP_CONF}:/etc/nginx/fastcgi-php.conf:ro
-      - ${NGINX_FASTCGI_PARAMS}:/etc/nginx/fastcig_params:ro
-      - ${NGINX_LOG_DIR}:/var/log/nginx/:rw
-    environment: 
+      - ${NGINX_FASTCGI_PARAMS}:/etc/nginx/fastcgi_params:ro
+      - ${NGINX_LOG_DIR}:/var/logs/nginx/:rw
+    environment:
       TZ: "$TZ"
     restart: always
-    networks: 
+    networks:
       - default
 
 #-------------------------     
