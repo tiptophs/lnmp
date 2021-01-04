@@ -33,66 +33,31 @@ services:
 #-------------------------      
 
   # php7.4.7
-  php:
-    build:
-      context: ./services/php
-      args:
-        PHP_VERSION: php:${PHP_VERSION}-fpm-alpine
-        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-        PHP_EXTENSIONS: ${PHP_EXTENSIONS}
-        TZ: "$TZ"
-    container_name: php
-    expose:
-      - 9501
-    extra_hosts:
-      - "www.site1.com:172.17.0.1"
-    volumes:
-      - ${SOURCE_DIR}:/www/:rw
-      - ${PHP_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
-      - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
-      - ${PHP_LOG_DIR}:/var/log/php
-      - ${DATA_DIR}/composer:/tmp/composer
-    restart: always
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
-
-#-------------------------     
-#     mysql相关配置
-#-------------------------
-
-# mysql:
-  #   image: mysql:${MYSQL_VERSION}
-  #   container_name: mysql
-  #   ports:
-  #     - "${MYSQL_HOST_PORT}:3306"
+  # php:
+  #   build:
+  #     context: ./services/php
+  #     args:
+  #       PHP_VERSION: php:${PHP_VERSION}-fpm-alpine
+  #       CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+  #       PHP_EXTENSIONS: ${PHP_EXTENSIONS}
+  #       TZ: "$TZ"
+  #   container_name: php
+  #   expose:
+  #     - 9501
+  #   extra_hosts:
+  #     - "www.site1.com:172.17.0.1"
   #   volumes:
-  #     - ${MYSQL_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
-  #     - ${DATA_DIR}/mysql:/var/lib/mysql/:rw
+  #     - ${SOURCE_DIR}:/www/:rw
+  #     - ${PHP_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+  #     - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+  #     - ${PHP_LOG_DIR}:/var/log/php
+  #     - ${DATA_DIR}/composer:/tmp/composer
   #   restart: always
+  #   cap_add:
+  #     - SYS_PTRACE
   #   networks:
   #     - default
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
-  #     TZ: "$TZ"
 
-  mysql5:
-    image: mysql:${MYSQL5_VERSION}
-    command: --default-authentication-plugin=mysql_native_password --innodb-use-native-aio=0
-    container_name: mysql5
-    ports:
-      - "${MYSQL5_HOST_PORT}:3306"
-    volumes:
-      - ${MYSQL5_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
-      - ${DATA_DIR}/mysql5:/var/lib/mysql/:rw
-    restart: always
-    networks:
-      - default
-    environment:
-      MYSQL_ROOT_PASSWORD: "${MYSQL5_ROOT_PASSWORD}"
-      TZ: "$TZ"
-  
   # php56:
   #   build:
   #     context: ./services/php
@@ -116,27 +81,76 @@ services:
   #   networks:
   #     - default
 
-  #  php54:
-  #     build:
-  #       context: ./services/php54
-  #       args:
-  #         PHP_VERSION: php:${PHP54_VERSION}-fpm
-  #         CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
-  #         PHP_EXTENSIONS: ${PHP54_EXTENSIONS}
-  #         TZ: "$TZ"
-  #     container_name: php54
-  #     volumes:
-  #       - ${SOURCE_DIR}:/www/:rw
-  #       - ${PHP54_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
-  #       - ${PHP54_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
-  #       - ${PHP54_LOG_DIR}:/var/log/php
-  #       - ${DATA_DIR}/composer:/tmp/composer
-  #     restart: always
-  #     cap_add:
-  #       - SYS_PTRACE
-  #     networks:
-  #       - default
+  php54:
+    build:
+      context: ./services/php54
+      args:
+        PHP_VERSION: php:${PHP54_VERSION}-fpm
+        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+        PHP_EXTENSIONS: ${PHP54_EXTENSIONS}
+        TZ: "$TZ"
+    container_name: php54
+    volumes:
+      - ${SOURCE_DIR}:/www/:rw
+      - ${PHP54_PHP_CONF_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP54_FPM_CONF_FILE}:/usr/local/etc/php-fpm.d/www.conf:rw
+      - ${PHP54_LOG_DIR}:/var/log/php
+      - ${DATA_DIR}/composer:/tmp/composer
+    restart: always
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
 
+#-------------------------     
+#     mysql相关配置
+#-------------------------
+
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    container_name: mysql
+    ports:
+      - "${MYSQL_HOST_PORT}:3306"
+    volumes:
+      - ${MYSQL_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
+      - ${DATA_DIR}/mysql:/var/lib/mysql/:rw
+    restart: always
+    networks:
+      - default
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      TZ: "$TZ"
+
+  # mysql5:
+  #   image: mysql:${MYSQL5_VERSION}
+  #   container_name: mysql5
+  #   ports:
+  #     - "${MYSQL5_HOST_PORT}:3306"
+  #   volumes:
+  #     - ${MYSQL5_CONF_FILE}:/etc/mysql/conf.d/mysql.cnf:ro
+  #     - ${DATA_DIR}/mysql5:/var/lib/mysql/:rw
+  #   restart: always
+  #   networks:
+  #     - default
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: "${MYSQL5_ROOT_PASSWORD}"
+  #     TZ: "$TZ"
+
+  # redis
+  redis:
+    image: redis:${REDIS_VERSION}
+    container_name: redis
+    ports:
+      - "${REDIS_HOST_PORT}:6379"
+    volumes:
+      - ${REDIS_CONF_FILE}:/etc/redis.conf:ro
+      - ${DATA_DIR}/redis:/data/:rw
+    restart: always
+    entrypoint: ["redis-server", "/etc/redis.conf"]
+    environment:
+      TZ: "$TZ"
+    networks:
+      - default
 # 网路
 networks: 
   default:
